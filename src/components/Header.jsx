@@ -1,15 +1,17 @@
 import React from 'react'
 import styled from 'styled-components';
+import {useState, useEffect} from 'react';
 
-const Header = () => {
 
-    // const [input, setInput] = useState("");
+const Header = ({onInputChange}) => {
+  
 
   return (
         <HeaderStyle>
             <div>
-            <input type="text" class="search" placeholder="type in your location" onchange="setAddress()"/>
+            <input type="text" className="search" placeholder="type in your location" onChange={(e)=>onInputChange(e.target.value)} />
             </div>
+    
         </HeaderStyle>
 
   );
@@ -22,10 +24,11 @@ const HeaderStyle = styled.form `
     width: 300px;
     border-radius:15px;
     background: transparent;
-    border: 2px white solid;
+    border: 2px black solid;
     color:white;
     outline: none;
 }
+
 `
 
 export default Header

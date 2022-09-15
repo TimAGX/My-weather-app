@@ -1,25 +1,90 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import styled from 'styled-components'
+import Header from './Header';
 
 
-const Weather = () => {
 
+const Weather = ({input}) => {
+    console.log(input);
+
+    const key = 'b92fc960e148cadebcf419efb66dd6d4';
+    const KELVIN = 273;
+
+    const [weather, setWeather] = useState({})
+    const [temp, setTemp] = useState("")
+    const [data, setData] = useState({})
+    
+    useEffect(() => {
+        let value = true;
+        getLocation();
+          return () => {
+              value = false;
+          }
+      }, [input])
+
+    useEffect(() => {
+      let value = true;
+        getWeather(6.497892, 3.382923)
+        return () => {
+            value = false;
+        }
+    }, [])
+
+
+    const getLocation = () => {
+        let api = `https://api.geoapify.com/v1/geocode/search?text=${input}&format=json&apiKey=66c44e5a39034874a2bba35da1759a47`;
+
+        fetch(api)
+          .then((res) => {
+            let data = res.json();
+            return data;
+          })
+          .then((data) => {
+            console.log(data.results[0].lon, data.results[0].lat);
+            getWeather(data.results[0].lat, data.results[0].lon);
+          });
+      } 
+    
+    
+    const getWeather = (latitude, longitude) => {
+       let api = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${key}`;
+
+       fetch(api)
+         .then(function (response) {
+           let data = response.json();
+           return data;
+         })
+         .then(function (data) {
+           console.log(data);
+           setData(data);
+           setWeather(data.weather[0]);
+           setTemp(Math.floor(data.main.temp - KELVIN));
+           // weather.temperature.value = Math.floor(data.main.temp - KELVIN);
+           // weather.description = data.weather[0].description;
+           // weather.iconId = data.weather[0].icon;
+           // weather.city = data.name;
+           // weather.country = data.sys.country;
+         });
+    }
+    
   return (
     <Grid>
     <div>
-    <div class="container">
-        <div class="app-title"><p>Weather</p></div>
-        <div class="notification"></div>
-        <div class="weather-container">
-            <div class="weather-icon"><img src="./img/"/></div>
-            <div class="temperature-value"><p>- °<span>C</span></p></div>
-            <div class="temperature-description"><p> - </p></div>
-            <div class="location"><p> - </p></div>
+    <div className="container">
+        <div className="app-title"><p>Weather</p></div>
+        <div className="notification"></div>
+        <div className="weather-container">
+            <div className="weather-icon"><img src={weather.icon ? `/img/${weather.icon}.png` : '/img/unknown.png'}/></div>
+            <div className="temperature-value"><p>{temp ? temp : "-"} °<span>C</span></p></div>
+            <div className="temperature-description"><p>{weather.description ? weather.description : "-"}</p></div>
+            <div className="location"><p> {data.name}</p></div>
         </div>
     </div> 
     </div>
 
     </Grid>
+
+    
   );
 }
 const Grid = styled.div `
@@ -32,6 +97,7 @@ const Grid = styled.div `
     
     border-radius: 10px;
     padding-bottom : 50px;
+    border: 2px solid black
 }
 
 .app-title{
@@ -64,7 +130,7 @@ const Grid = styled.div `
 .weather-container{
     width: 300px;
     height: 260px;
-    background-color: #F4F9FF;
+    background-color: #fff;
 }
 
 .weather-icon{
