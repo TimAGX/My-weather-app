@@ -13,6 +13,7 @@ const Weather = ({input}) => {
     const [weather, setWeather] = useState({})
     const [temp, setTemp] = useState("")
     const [data, setData] = useState({})
+    const [clicked, setClickd] = useState(false)
     
     useEffect(() => {
         let value = true;
@@ -66,6 +67,10 @@ const Weather = ({input}) => {
            // weather.country = data.sys.country;
          });
     }
+
+    const celsiusToFahrenheit = (temperature) => {
+        return (temperature * 9) / 5 + 32;
+      }
     
   return (
     <Grid>
@@ -75,7 +80,10 @@ const Weather = ({input}) => {
         <div className="notification"></div>
         <div className="weather-container">
             <div className="weather-icon"><img src={weather.icon ? `/img/${weather.icon}.png` : '/img/unknown.png'}/></div>
-            <div className="temperature-value"><p>{temp ? temp : "-"} °<span>C</span></p></div>
+            {clicked ? <div className="temperature-value" onClick={() => setClickd(!clicked)}><p>{temp ? celsiusToFahrenheit(temp) : "-"} °<span>F</span></p></div>:
+            <div className="temperature-value" onClick={() => setClickd(!clicked)}><p>{temp ? temp : "-"} °<span>C</span></p></div>
+            }
+            
             <div className="temperature-description"><p>{weather.description ? weather.description : "-"}</p></div>
             <div className="location"><p> {data.name}</p></div>
         </div>
@@ -90,7 +98,7 @@ const Weather = ({input}) => {
 const Grid = styled.div `
 .container{
     width: 300px;    
-    background-color: #FFF;
+    background-color: transparent;
     
     display: block;
     margin: 0 auto;
@@ -130,7 +138,7 @@ const Grid = styled.div `
 .weather-container{
     width: 300px;
     height: 260px;
-    background-color: #fff;
+    background-color: transparent;
 }
 
 .weather-icon{
